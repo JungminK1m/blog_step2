@@ -15,6 +15,7 @@ import org.springframework.transaction.annotation.Transactional;
 import shop.mtcoding.blog.dto.board.BoardReq.BoardUpdateReqDto;
 import shop.mtcoding.blog.dto.board.BoardResp;
 import shop.mtcoding.blog.dto.board.BoardResp.BoardDetailRespDto;
+import shop.mtcoding.blog.dto.reply.ReplyResp.ReplyDetailRespDto;
 import shop.mtcoding.blog.model.User;
 
 import java.sql.Timestamp;
@@ -63,11 +64,11 @@ public class BoardControllerTest {
         boardUpdateReqDto.setContent("내용1-수정");
 
         String requestBody = om.writeValueAsString(boardUpdateReqDto);
-        System.out.println("테스트 : "+requestBody);
+        System.out.println("테스트 : " + requestBody);
 
         // when
         ResultActions resultActions = mvc.perform(
-                put("/board/"+id)
+                put("/board/" + id)
                         .content(requestBody)
                         .contentType(MediaType.APPLICATION_JSON_VALUE)
                         .session(mockSession));
@@ -86,7 +87,7 @@ public class BoardControllerTest {
         ResultActions resultActions = mvc.perform(
                 delete("/board/" + id).session(mockSession));
         String responseBody = resultActions.andReturn().getResponse().getContentAsString();
-        System.out.println("delete_test : "+responseBody);
+        System.out.println("delete_test : " + responseBody);
 
         /**
          * jsonPath
@@ -108,15 +109,20 @@ public class BoardControllerTest {
         ResultActions resultActions = mvc.perform(
                 get("/board/" + id));
         Map<String, Object> map = resultActions.andReturn().getModelAndView().getModel();
-        BoardDetailRespDto dto = (BoardDetailRespDto) map.get("dto");
-        String model = om.writeValueAsString(dto);
-        System.out.println("detail_test : " + model);
+        BoardDetailRespDto boardDto = (BoardDetailRespDto) map.get("boardDto");
+        List<ReplyDetailRespDto> replyDtos = (List<ReplyDetailRespDto>) map.get("replyDtos");
+        String boardJson = om.writeValueAsString(boardDto);
+        String replyListJson = om.writeValueAsString(replyDtos);
+        System.out.println("테스트 : " + boardJson);
+        System.out.println("테스트 : " + replyListJson);
 
         // then
         resultActions.andExpect(status().isOk());
-        assertThat(dto.getUsername()).isEqualTo("ssar");
-        assertThat(dto.getUserId()).isEqualTo(1);
-        assertThat(dto.getTitle()).isEqualTo("1번째 제목");
+        assertThat(boardDto.getUsername()).isEqualTo("ssar");
+        assertThat(boardDto.getUserId()).isEqualTo(1);
+        assertThat(boardDto.getTitle()).isEqualTo("1번째 제목");
+        assertThat(replyDtos.get(1).getComment()).isEqualTo("댓글3");
+        assertThat(replyDtos.get(1).getComment()).isEqualTo("love");
     }
 
     @Test

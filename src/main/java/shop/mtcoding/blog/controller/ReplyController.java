@@ -6,7 +6,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PostMapping;
-import shop.mtcoding.blog.handler.ex.CustomApiException;
+
+import shop.mtcoding.blog.dto.reply.ReplyReq.ReplySaveReqDto;
 import shop.mtcoding.blog.handler.ex.CustomException;
 import shop.mtcoding.blog.model.User;
 import shop.mtcoding.blog.service.ReplyService;
@@ -42,10 +43,4 @@ public class ReplyController {
         return "redirect:/board/" + replySaveReqDto.getBoardId();
     }
 
-    @Setter
-    @Getter
-    public static class ReplySaveReqDto {
-        private String comment;
-        private Integer boardId;
-    }
 }

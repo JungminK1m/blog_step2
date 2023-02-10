@@ -48,18 +48,25 @@
             <div class="card">
                 <div class="card-header">댓글 리스트</div>
                 <ul id="reply-box" class="list-group">
-                    <li id="reply-1" class="list-group-item d-flex justify-content-between">
-                        <div>댓글내용입니다</div>
+                <c:forEach items="${replyDtos}" var="">
+                    <li id="reply-${reply.id}" class="list-group-item d-flex justify-content-between">
+                        <div>${reply.comment}</div>
                         <div class="d-flex">
-                            <div class="font-italic">작성자 : cos &nbsp;</div>
-                            <button onClick="replyDelete()" class="badge bg-secondary">삭제</button>
+                            <div class="font-italic">작성자 : ${reply.username}</div>
+                            <button onClick="deleteByReplyId(${reply.id})" class="badge bg-secondary">삭제</button>
                         </div>
                     </li>
+                </c:forEach>
                 </ul>
             </div>
         </div>
 
         <script>
+            function deleteByReplyId(id){
+                $("#reply-"+id).remove();
+                // 아니면 location.reload();
+            }
+
             function deleteById(id) {
                 $.ajax({
                     type: "delete",

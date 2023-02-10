@@ -13,6 +13,7 @@ import shop.mtcoding.blog.handler.ex.CustomApiException;
 import shop.mtcoding.blog.handler.ex.CustomException;
 import shop.mtcoding.blog.model.Board;
 import shop.mtcoding.blog.model.BoardRepository;
+import shop.mtcoding.blog.model.ReplyRepository;
 import shop.mtcoding.blog.model.User;
 import shop.mtcoding.blog.service.BoardService;
 
@@ -31,8 +32,12 @@ public class BoardController {
     @Autowired
     private BoardRepository boardRepository;
 
+    @Autowired
+    private ReplyRepository replyRepository;
+
     @PutMapping("/board/{id}")
-    public @ResponseBody ResponseEntity<?> update(@PathVariable int id, @RequestBody BoardUpdateReqDto boardUpdateReqDto, HttpServletResponse response){
+    public @ResponseBody ResponseEntity<?> update(@PathVariable int id,
+            @RequestBody BoardUpdateReqDto boardUpdateReqDto, HttpServletResponse response) {
         User principal = (User) session.getAttribute("principal");
         if (principal == null) {
             throw new CustomApiException("인증이 되지 않았습니다", HttpStatus.UNAUTHORIZED);
@@ -48,10 +53,8 @@ public class BoardController {
         return new ResponseEntity<>(new ResponseDto<>(1, "게시글수정성공", null), HttpStatus.OK);
     }
 
-
-
     @DeleteMapping("/board/{id}")
-    public @ResponseBody ResponseEntity<?> delete(@PathVariable int id){
+    public @ResponseBody ResponseEntity<?> delete(@PathVariable int id) {
         User principal = (User) session.getAttribute("principal");
         if (principal == null) {
             throw new CustomApiException("인증이 되지 않았습니다", HttpStatus.UNAUTHORIZED);
@@ -90,7 +93,8 @@ public class BoardController {
 
     @GetMapping("/board/{id}")
     public String detail(@PathVariable int id, Model model) {
-        model.addAttribute("dto", boardRepository.findByIdWithUser(id));
+        model.addAttribute("boardDto", boardRepository.findByIdWithUser(id));
+        model.addAttribute("replyDtos", replyRepository.findByBoardIdWithUser(id));
         return "board/detail";
     }
 
@@ -106,13 +110,13 @@ public class BoardController {
             throw new CustomException("인증이 되지 않았습니다", HttpStatus.UNAUTHORIZED);
         }
         Board boardPS = boardRepository.findById(id);
-        if(boardPS == null){
+        if (boardPS == null) {
             throw new CustomException("없는 게시글을 수정할 수 없습니다");
         }
-        if(boardPS.getUserId() != principal.getId()){
+        if (boardPS.getUserId() != principal.getId()) {
             throw new CustomException("게시글을 수정할 권한이 없습니다", HttpStatus.FORBIDDEN);
         }
-        model.addAttribute("board",boardPS);
+        model.addAttribute("board", boardPS);
         return "board/updateForm";
     }
 }
