@@ -4,7 +4,6 @@
   "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
 <mapper namespace="shop.mtcoding.blog.model.ReplyRepository">
-   
 
     <select id="findAll" resultType="shop.mtcoding.blog.model.Reply">
         select * from reply_tb
@@ -15,7 +14,7 @@
     </select>    
 
     <insert id="insert">
-        insert into reply_tb (comment, user_id, board_id, created_at) values(#{comment}, #{user_id}, #{board_id}, now())
+        insert into reply_tb (comment, board_id, user_id, created_at) values(#{comment}, #{boardId}, #{userId}, now())
     </insert>    
 
     <delete id="deleteById" >
